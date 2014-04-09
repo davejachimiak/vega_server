@@ -1,14 +1,14 @@
 require 'spec_helper'
 
 describe 'handshake' do
-  include VegaSteps
+  include VegaServer::HandshakeSteps
 
   context 'allowed origins are configured' do
     context 'origin of client is allowed' do
+      let(:origins) { ['http://www.example.org'] }
+      #before { configure_origins(origins) }
+
       it 'leaves the connection open' do
-        #VegaServer.configure do |config|
-          #config.allow_origins(["http://www.example.com"])
-        #end
         start_server
         open_socket
 
