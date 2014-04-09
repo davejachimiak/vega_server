@@ -6,7 +6,7 @@ describe 'handshake' do
   context 'allowed origins are configured' do
     context 'origin of client is allowed' do
       let(:origins) { ['http://www.example.org'] }
-      #before { configure_origins(origins) }
+      before { configure_origins(origins) }
 
       it 'leaves the connection open' do
         start_server
@@ -16,10 +16,6 @@ describe 'handshake' do
 
         stop_server
       end
-    end
-
-    context 'origin of client is not allowed' do
-      it 'closes the connection'
     end
   end
 end

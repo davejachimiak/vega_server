@@ -3,6 +3,7 @@ VegaServer::HandshakeSteps = RSpec::EM.async_steps do
     VegaServer.configure do |config|
       config.allow_origins(origins)
     end
+    EM.next_tick(&callback)
   end
 
   def start_server &callback
