@@ -2,8 +2,8 @@ require 'multi_json'
 
 module VegaServer
   class OnMessage
-    def initialize(ws)
-      @ws   = ws
+    def initialize(websocket)
+      @ws   = websocket
       @pool = VegaServer.connection_pool
     end
 
@@ -15,8 +15,8 @@ module VegaServer
         client_id = SecureRandom.uuid
         @pool[client_id] = @ws
 
-        response = MultiJson.dump({ event: 'callerSuccess',
-                                    payload: {} })
+        message  = { event: 'callerSuccess',  payload: {} }
+        response = MultiJson.dump(message)
 
         @ws.send(response)
       end

@@ -1,7 +1,7 @@
 module VegaServer
   class OnOpen
-    def initialize(ws, origin)
-      @ws              = ws
+    def initialize(websocket, origin)
+      @ws              = websocket
       @origin          = origin
       @allowed_origins = VegaServer.allowed_origins
     end
