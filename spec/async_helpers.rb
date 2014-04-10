@@ -1,4 +1,3 @@
-require 'pry'
 VegaServer::SetupTeardownSteps = RSpec::EM.async_steps do
   def enable_modified_env(&callback)
     EM.next_tick { VegaServer.enable_modified_env! }
@@ -89,8 +88,18 @@ VegaServer::CallMessageSteps = RSpec::EM.async_steps do
     end
   end
 
-  def send_message(message, &callback)
+  def add_listener(&callback)
     EM.next_tick do
+      @ws.on :message do |event|
+        @messages_from_server ||= []
+        @messages_from_server.push event.data
+      end
+      callback.call
+    end
+  end
+
+  def send_message(message, &callback)
+    EM.add_timer 0.1 do
       @ws.send(message)
       EM.next_tick(&callback)
     end
@@ -101,6 +110,13 @@ VegaServer::CallMessageSteps = RSpec::EM.async_steps do
       ws = VegaServer.connection_pool[@client_id]
       expect(ws).to_not be_nil
       EM.next_tick(&callback)
+    end
+  end
+
+  def assert_response(response, &callback)
+    EM.add_timer 0.1 do
+      expect(@messages_from_server).to include response
+      callback.call
     end
   end
 end

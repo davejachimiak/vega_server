@@ -14,6 +14,11 @@ module VegaServer
 
         client_id = SecureRandom.uuid
         @pool[client_id] = @ws
+
+        response = MultiJson.dump({ event: 'callerSuccess',
+                                    payload: {} })
+
+        @ws.send(response)
       end
     end
 

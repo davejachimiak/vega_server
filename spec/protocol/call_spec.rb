@@ -4,6 +4,14 @@ require 'multi_json'
 describe 'call message is received' do
   include VegaServer::CallMessageSteps
 
+  before do
+    start_server
+    open_socket
+    stub_client_id(client_id)
+  end
+
+  after { stop_server }
+
   context 'room is empty' do
     let(:message) { MultiJson.dump(raw_message) }
     let(:raw_message) { { event: 'call', payload: payload } }
@@ -20,13 +28,18 @@ describe 'call message is received' do
     let(:client_id) { 'yup' }
 
     it 'adds the connection to the pool' do
-      start_server
-      open_socket
-      stub_client_id(client_id)
+      send_message(message)
+      assert_connection_in_pool
+    end
+
+    it 'sends a calleeSuccess response to the client' do
+      add_listener
+      hash = { event: 'callerSuccess', payload: {} }
+      response = MultiJson.dump(hash)
 
       send_message(message)
 
-      assert_connection_in_pool
+      assert_response(response)
     end
   end
 end
