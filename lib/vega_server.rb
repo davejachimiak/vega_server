@@ -2,6 +2,7 @@ require 'vega_server/version'
 require 'faye/websocket'
 require 'vega_server/server'
 require 'vega_server/adapters'
+require 'vega_server/storage'
 
 module VegaServer
   def self.configure
@@ -14,6 +15,10 @@ module VegaServer
 
   def self.allowed_origins
     @allowed_origins ||= []
+  end
+
+  def self.storage
+    @storage ||= VegaServer::Storage::Memory
   end
 
   def self.env_adapter
