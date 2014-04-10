@@ -7,11 +7,11 @@ VegaServer::HandshakeSteps = RSpec::EM.async_steps do
   end
 
   def start_server &callback
-    vega = VegaServer::Server.new
+    @vega = VegaServer::Server.new
     events = Puma::Events.new(StringIO.new, StringIO.new)
     binder = Puma::Binder.new(events)
-    binder.parse(["tcp://0.0.0.0:9292"], vega)
-    @server = Puma::Server.new(vega, events)
+    binder.parse(["tcp://0.0.0.0:9292"], @vega)
+    @server = Puma::Server.new(@vega, events)
     @server.binder = binder
     @server.run
     EM.add_timer(0.1, &callback)
@@ -33,21 +33,27 @@ VegaServer::HandshakeSteps = RSpec::EM.async_steps do
       end
     end
 
+    @vega.origin = origin
+
     @ws = Faye::WebSocket::Client.new('ws://0.0.0.0:9292')
 
-    @ws.instance_variable_set(:@headers, { 'HTTP_ORIGIN' => origin })
-
     @ws.on(:open) { |e| resume.call(true) }
-    @ws.onclose = lambda { |e| resume.call(false) }
+    @ws.onclose = lambda do |e|
+      @open = false
+      resume.call(false)
+      @ws = nil
+    end
   end
 
   def assert_socket_open(&callback)
-    expect(@open).to eq true
+    expect(@open).to be_true
     EM.next_tick(&callback)
   end
 
   def assert_socket_closed(&callback)
-    expect(@open).to eq false
-    EM.next_tick(&callback)
+    EM.add_timer 0.1 do
+      expect(@open).to be_false
+      EM.next_tick(&callback)
+    end
   end
 end
