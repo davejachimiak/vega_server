@@ -1,4 +1,5 @@
 require 'vega_server/on_open'
+require 'vega_server/on_message'
 
 module VegaServer
   class Server
@@ -14,6 +15,7 @@ module VegaServer
       ws     = Faye::WebSocket.new(env, nil, { ping: 10 })
 
       VegaServer::OnOpen.call(ws, origin)
+      VegaServer::OnMessage.call(ws)
 
       ws.rack_response
     end

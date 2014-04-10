@@ -1,4 +1,5 @@
-VegaServer::HandshakeSteps = RSpec::EM.async_steps do
+require 'pry'
+VegaServer::SetupTeardownSteps = RSpec::EM.async_steps do
   def enable_modified_env(&callback)
     EM.next_tick { VegaServer.enable_modified_env! }
     EM.next_tick(&callback)
@@ -30,7 +31,7 @@ VegaServer::HandshakeSteps = RSpec::EM.async_steps do
     EM.next_tick(&callback)
   end
 
-  def open_socket(origin, &callback)
+  def open_socket(origin=nil, &callback)
     done = false
 
     resume = lambda do |open|
@@ -41,7 +42,7 @@ VegaServer::HandshakeSteps = RSpec::EM.async_steps do
       end
     end
 
-    VegaServer.env_adapter.origin = origin
+    VegaServer.env_adapter.origin = origin if origin
 
     @ws = Faye::WebSocket::Client.new('ws://0.0.0.0:9292')
 
@@ -51,6 +52,15 @@ VegaServer::HandshakeSteps = RSpec::EM.async_steps do
       @ws = nil
     end
   end
+
+  def reset_allowed_origins(&callback)
+    EM.next_tick { VegaServer.allow_origins([]) }
+    EM.next_tick(&callback)
+  end
+end
+
+VegaServer::HandshakeSteps = RSpec::EM.async_steps do
+  include VegaServer::SetupTeardownSteps
 
   def assert_socket_open(&callback)
     EM.add_timer 0.1 do
@@ -65,9 +75,32 @@ VegaServer::HandshakeSteps = RSpec::EM.async_steps do
       EM.next_tick(&callback)
     end
   end
+end
 
-  def reset_allowed_origins(&callback)
-    EM.next_tick { VegaServer.allow_origins([]) }
-    EM.next_tick(&callback)
+VegaServer::CallMessageSteps = RSpec::EM.async_steps do
+  include VegaServer::SetupTeardownSteps
+
+  def stub_client_id(client_id, &callback)
+    @client_id = client_id
+
+    EM.next_tick do
+      SecureRandom.stubs(:uuid).returns client_id
+      EM.next_tick(&callback)
+    end
+  end
+
+  def send_message(message, &callback)
+    EM.next_tick do
+      @ws.send(message)
+      EM.next_tick(&callback)
+    end
+  end
+
+  def assert_connection_in_pool(&callback)
+    EM.add_timer 0.1 do
+      ws = VegaServer.connection_pool[@client_id]
+      expect(ws).to_not be_nil
+      EM.next_tick(&callback)
+    end
   end
 end

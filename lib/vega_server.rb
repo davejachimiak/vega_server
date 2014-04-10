@@ -27,4 +27,8 @@ module VegaServer
   def self.disable_modified_env!
     @env_adapter = VegaServer::Adapters::Env
   end
+
+  def self.connection_pool
+    @connection_pool ||= {}
+  end
 end
