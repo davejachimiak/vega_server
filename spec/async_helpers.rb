@@ -1,4 +1,14 @@
 VegaServer::HandshakeSteps = RSpec::EM.async_steps do
+  def enable_modified_env(&callback)
+    EM.next_tick { VegaServer.enable_modified_env! }
+    EM.next_tick(&callback)
+  end
+
+  def disable_modified_env(&callback)
+    EM.next_tick { VegaServer.disable_modified_env! }
+    EM.next_tick(&callback)
+  end
+
   def configure_origins(origins, &callback)
     VegaServer.configure { |config| config.allow_origins(origins) }
     EM.next_tick(&callback)
@@ -31,14 +41,13 @@ VegaServer::HandshakeSteps = RSpec::EM.async_steps do
       end
     end
 
-    @vega.origin = origin
+    VegaServer.env_adapter.origin = origin
 
     @ws = Faye::WebSocket::Client.new('ws://0.0.0.0:9292')
 
     @ws.on(:open) { |e| resume.call(true) }
     @ws.onclose = lambda do |e|
       @open = false
-      resume.call(false)
       @ws = nil
     end
   end

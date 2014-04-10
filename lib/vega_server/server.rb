@@ -1,13 +1,15 @@
 module VegaServer
   class Server
-    attr_accessor :origin
-
     def initialize
       @allowed_origins = VegaServer.allowed_origins
+      @env_adapter = lambda do |env|
+        VegaServer.env_adapter.new(env)
+      end
     end
 
     def call(env)
-      origin = env['HTTP_ORIGIN'] || self.origin
+      env    = @env_adapter.(env)
+      origin = env.origin
       ws     = Faye::WebSocket.new(env, nil, { ping: 10 })
 
       ws.on :open do

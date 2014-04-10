@@ -3,6 +3,9 @@ require 'spec_helper'
 describe 'handshake' do
   include VegaServer::HandshakeSteps
 
+  before { enable_modified_env }
+  after { disable_modified_env }
+
   context 'allowed origins are configured' do
     let(:allowed_origins) { [allowed_origin] }
     let(:allowed_origin) { 'http://www.example.org' }
