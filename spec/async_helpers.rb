@@ -1,8 +1,6 @@
 VegaServer::HandshakeSteps = RSpec::EM.async_steps do
   def configure_origins(origins, &callback)
-    VegaServer.configure do |config|
-      config.allow_origins(origins)
-    end
+    VegaServer.configure { |config| config.allow_origins(origins) }
     EM.next_tick(&callback)
   end
 
@@ -46,8 +44,10 @@ VegaServer::HandshakeSteps = RSpec::EM.async_steps do
   end
 
   def assert_socket_open(&callback)
-    expect(@open).to be_true
-    EM.next_tick(&callback)
+    EM.add_timer 0.1 do
+      expect(@open).to be_true
+      EM.next_tick(&callback)
+    end
   end
 
   def assert_socket_closed(&callback)
@@ -55,5 +55,10 @@ VegaServer::HandshakeSteps = RSpec::EM.async_steps do
       expect(@open).to be_false
       EM.next_tick(&callback)
     end
+  end
+
+  def reset_allowed_origins(&callback)
+    EM.next_tick { VegaServer.allow_origins([]) }
+    EM.next_tick(&callback)
   end
 end

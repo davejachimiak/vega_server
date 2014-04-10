@@ -13,22 +13,32 @@ describe 'handshake' do
       open_socket(origin)
     end
 
-    after { stop_server }
+    after do
+      stop_server
+      reset_allowed_origins
+    end
 
     context 'origin of client is allowed' do
       let(:origin) { allowed_origin }
 
-      it 'leaves the connection open' do
-        assert_socket_open
-      end
+      it('leaves the connection open') { assert_socket_open }
     end
 
     context 'origin of client is not allowed' do
       let(:origin) { 'http://www.example.com' }
 
-      it 'closes the connection' do
-        assert_socket_closed
-      end
+      it('closes the connection') { assert_socket_closed }
     end
+  end
+
+  context 'allowed origins are not configured' do
+    let(:origin) { 'http://www.example.com' }
+
+    before do
+      start_server
+      open_socket(origin)
+    end
+
+    it('leaves the connection open') { assert_socket_open }
   end
 end
