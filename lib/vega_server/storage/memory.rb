@@ -10,6 +10,10 @@ module VegaServer
         !storage[room_id]
       end
 
+      def self.room(room_id)
+        storage[room_id]
+      end
+
       private
 
       def self.[](room_id)
