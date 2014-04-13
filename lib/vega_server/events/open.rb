@@ -1,9 +1,12 @@
 module VegaServer::Events
   class Open
+    include Handleable
+
     def initialize(websocket, event)
-      @websocket       = websocket
       @origin          = event.origin
       @allowed_origins = VegaServer.allowed_origins
+
+      super
     end
 
     def handle
@@ -11,11 +14,6 @@ module VegaServer::Events
         @websocket.close
         @websocket = nil
       end
-    end
-
-    def self.handle(websocket, event)
-      event = VegaServer.event_adapter.new(event)
-      new(websocket, event).handle
     end
 
     private

@@ -2,11 +2,13 @@ require 'multi_json'
 
 module VegaServer::Events
   class Message
-    def initialize(websocket, event)
-      @websocket = websocket
-      @event     = event
+    include Handleable
+
+    def initialize(*args)
       @pool      = VegaServer.connection_pool
       @storage   = VegaServer.storage
+
+      super
     end
 
     def handle
@@ -22,10 +24,6 @@ module VegaServer::Events
       response = MultiJson.dump(message)
 
       @websocket.send(response)
-    end
-
-    def self.handle(websocket, event)
-      new(websocket, event).handle
     end
   end
 end
