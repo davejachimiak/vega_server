@@ -8,22 +8,12 @@ module VegaServer::IncomingMessages
       @room_id   = payload.delete(:room_id)
       @pool      = VegaServer.connection_pool
       @storage   = VegaServer.storage
+      @client_id = @pool.add!(@websocket)
     end
 
     def handle
-      client_id = @pool.add!(@websocket)
-
-      if room_is_empty?
-        message = VegaServer::OutgoingMessages::CallerSuccess.new
-        @storage.add_to_room(@room_id, client_id, @payload)
-      elsif peers_and_clients_match?
-        message = VegaServer::OutgoingMessages::CalleeSuccess.new
-        @storage.add_to_room(@room_id, client_id, @payload)
-      else
-        message = VegaServer::OutgoingMessages::UnacceptablePeerTypeError.new
-      end
-
-      VegaServer::OutgoingMessages::Send.call(@websocket, message)
+      VegaServer::OutgoingMessages.send_message(@websocket, message)
+      add_client_to_room
     end
 
     def self.handle(websocket, payload)
@@ -31,6 +21,26 @@ module VegaServer::IncomingMessages
     end
 
     private
+
+    def add_client_to_room
+      if successful_call?
+        @storage.add_to_room(@room_id, @client_id, @payload)
+      end
+    end
+
+    def successful_call?
+      room_is_empty? || peers_and_clients_match?
+    end
+
+    def message
+      if room_is_empty?
+        VegaServer::OutgoingMessages::CallerSuccess.new
+      elsif peers_and_clients_match?
+        VegaServer::OutgoingMessages::CalleeSuccess.new
+      else
+        VegaServer::OutgoingMessages::UnacceptablePeerTypeError.new
+      end
+    end
 
     def peers_and_clients_match?
       return true unless room
