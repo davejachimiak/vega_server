@@ -1,5 +1,4 @@
 require 'vega_server/version'
-require 'faye/websocket'
 require 'vega_server/server'
 require 'vega_server/adapters'
 require 'vega_server/storage'

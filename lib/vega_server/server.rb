@@ -1,5 +1,6 @@
-require 'vega_server/on_open'
-require 'vega_server/on_message'
+require 'faye/websocket'
+require 'vega_server/events'
+require 'vega_server/add_event_listener'
 
 module VegaServer
   class Server
@@ -14,8 +15,8 @@ module VegaServer
       origin = env.origin
       
       Faye::WebSocket.new(env, nil, { ping: 10 }).tap do |websocket|
-        VegaServer::OnOpen.call(websocket, origin)
-        VegaServer::OnMessage.call(websocket)
+        AddEventListener.call(:open, Events::Open, websocket, origin)
+        AddEventListener.call(:message, Events::Message, websocket, origin)
       end.rack_response
     end
 
