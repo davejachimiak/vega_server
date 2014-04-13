@@ -1,29 +1,25 @@
+require 'vega_server/incoming_messages'
 require 'vega_server/json'
 
 module VegaServer::Events
   class Message
-    include Handleable
+    CALL = 'call'.freeze
 
-    def initialize(*args)
-      @pool    = VegaServer.connection_pool
-      @storage = VegaServer.storage
-
-      super
+    def initialize(websocket, event)
+      @websocket = websocket
+      @event     = event
     end
 
     def handle
       case type
-      when 'call'
-        client_id = @pool.add!(@websocket)
-        room_id   = payload.delete(:room_id)
-
-        @storage.add_to_room(room_id, client_id, payload)
-
-        message  = { event: 'callerSuccess',  payload: {} }
-        response = MultiJson.dump(message)
-
-        @websocket.send(response)
+      when CALL
+        VegaServer::IncomingMessages::Call.new(@websocket, payload).handle
       end
+    end
+
+    def self.handle(websocket, event)
+      event = VegaServer.event_adapter.new(event)
+      new(websocket, event).handle
     end
 
     private
@@ -41,7 +37,7 @@ module VegaServer::Events
     end
 
     def raw_data
-      event.data
+      @event.data
     end
   end
 end
