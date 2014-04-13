@@ -38,9 +38,15 @@ module VegaServer::IncomingMessages
 
       return true unless room
 
-      room.first.last[:client_types].any? do |client_type|
+      q1 = room.first.last[:client_types].any? do |client_type|
         @payload[:acceptable_peer_types].include?(client_type)
       end
+
+      q2 = room.first.last[:acceptable_peer_types].any? do |acceptable_peer_type|
+        @payload[:client_types].include?(acceptable_peer_type)
+      end
+
+      q1 && q2
     end
 
     def room_is_empty?
