@@ -17,7 +17,9 @@ module VegaServer::IncomingMessages
                   { type: 'calleeSuccess',  payload: {} }
                 end
 
-      @storage.add_to_room(@room_id, client_id, @payload)
+      if peers_are_acceptable?
+        @storage.add_to_room(@room_id, client_id, @payload)
+      end
 
       response = MultiJson.dump(message)
       @websocket.send(response)
@@ -28,6 +30,16 @@ module VegaServer::IncomingMessages
     end
 
     private
+
+    def peers_are_acceptable?
+      room = @storage[@room_id]
+
+      return true unless room
+
+      room.first.last[:client_types].any? do |client_type|
+        @payload[:acceptable_peer_types].include?(client_type)
+      end
+    end
 
     def room_is_empty?
       @storage.room_is_empty?(@room_id)
