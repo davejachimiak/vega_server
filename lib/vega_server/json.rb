@@ -3,6 +3,10 @@ require 'active_support/inflector'
 
 module VegaServer
   class Json
+    def self.dump(hash)
+      MultiJson.dump(hash)
+    end
+
     def self.to_struct(json)
       hash = load(json)
       purified_hash = purify_keys(hash)

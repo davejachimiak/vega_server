@@ -1,3 +1,5 @@
+require 'vega_server/outgoing_messages'
+
 module VegaServer::IncomingMessages
   class Call
     def initialize(websocket, payload)
@@ -12,17 +14,16 @@ module VegaServer::IncomingMessages
       client_id = @pool.add!(@websocket)
 
       if room_is_empty?
-        message = { type: 'callerSuccess',  payload: {} }
+        message = VegaServer::OutgoingMessages::CallerSuccess.new
         @storage.add_to_room(@room_id, client_id, @payload)
       elsif peers_and_clients_match?
-        message = { type: 'calleeSuccess',  payload: {} }
+        message = VegaServer::OutgoingMessages::CalleeSuccess.new
         @storage.add_to_room(@room_id, client_id, @payload)
       else
-        message = { type: 'unacceptablePeerTypeError',  payload: {} }
+        message = VegaServer::OutgoingMessages::UnacceptablePeerTypeError.new
       end
 
-      response = MultiJson.dump(message)
-      @websocket.send(response)
+      VegaServer::OutgoingMessages::Send.call(@websocket, message)
     end
 
     def self.handle(websocket, payload)
