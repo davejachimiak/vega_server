@@ -67,7 +67,7 @@ module VegaServer::IncomingMessages
     end
 
     def room
-      @storage.room(@room_id)
+      @room ||= @storage.room(@room_id)
     end
 
     def room_is_empty?
