@@ -3,8 +3,8 @@ require 'spec_helper'
 describe 'handshake' do
   include VegaServer::HandshakeSteps
 
-  before { enable_modified_env }
-  after { disable_modified_env }
+  before { enable_modified_event }
+  after { disable_modified_event }
 
   context 'allowed origins are configured' do
     let(:allowed_origins) { [allowed_origin] }

@@ -1,7 +1,2 @@
-require 'vega_server/adapters/env'
-require 'vega_server/adapters/modified_env'
-
-module VegaServer
-  module Adapters
-  end
-end
+require 'vega_server/adapters/event'
+require 'vega_server/adapters/modified_event'
