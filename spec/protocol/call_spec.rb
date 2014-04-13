@@ -87,12 +87,19 @@ describe 'call message is received' do
       end
     end
 
-    context 'client and peer types do not match' do
-      let(:other_client_types) { ['bad peer type'] }
+    context "peer's client type does not match acceptable peer type" do
+      let(:other_client_types) { ['not just any type!'] }
       let(:response) do
-        MultiJson.dump({ type: 'unacceptablePeerTypesError', payload: {} })
+        MultiJson.dump({ type: 'unacceptablePeerTypeError', payload: {} })
       end
+
       it_should_behave_like 'call message'
+
+      it 'should not add the client to the room' do
+        send_message(message)
+
+        refute_client_in_room(room_id, client_id)
+      end
     end
   end
 end
