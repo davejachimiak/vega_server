@@ -43,24 +43,27 @@ module VegaServer::IncomingMessages
     end
 
     def peers_and_clients_match?
-      return true unless room
-      peers_are_acceptable? && client_is_acceptable?
+      @peers_and_clients_match ||=
+        begin
+          return true unless room
+          peers_are_acceptable? && client_is_acceptable?
+        end
     end
 
     def peers_are_acceptable?
-      first_room_peer_data[:client_types].any? do |client_type|
+      room_first_peer_data[:client_types].any? do |client_type|
         @payload[:acceptable_peer_types].include?(client_type)
       end
     end
 
     def client_is_acceptable?
-      first_room_peer_data[:acceptable_peer_types].any? do |acceptable_peer_type|
+      room_first_peer_data[:acceptable_peer_types].any? do |acceptable_peer_type|
         @payload[:client_types].include?(acceptable_peer_type)
       end
     end
 
-    def first_room_peer_data
-      room.first.last
+    def room_first_peer_data
+      @room_first_peer_data ||= room.first.last
     end
 
     def room
@@ -68,7 +71,7 @@ module VegaServer::IncomingMessages
     end
 
     def room_is_empty?
-      @storage.room_is_empty?(@room_id)
+      @room_is_emtpy ||= @storage.room_is_empty?(@room_id)
     end
   end
 end
