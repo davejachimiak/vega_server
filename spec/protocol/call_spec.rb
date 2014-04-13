@@ -86,5 +86,13 @@ describe 'call message is received' do
         assert_response(response)
       end
     end
+
+    context 'client and peer types do not match' do
+      let(:other_client_types) { ['bad peer type'] }
+      let(:response) do
+        MultiJson.dump({ type: 'unacceptablePeerTypesError', payload: {} })
+      end
+      it_should_behave_like 'call message'
+    end
   end
 end
