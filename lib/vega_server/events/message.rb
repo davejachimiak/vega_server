@@ -13,7 +13,7 @@ module VegaServer::Events
     def handle
       case type
       when CALL
-        VegaServer::IncomingMessages::Call.new(@websocket, payload).handle
+        VegaServer::IncomingMessages::Call.handle(@websocket, payload)
       end
     end
 

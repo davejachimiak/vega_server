@@ -18,5 +18,9 @@ module VegaServer::IncomingMessages
 
       @websocket.send(response)
     end
+
+    def self.handle(websocket, payload)
+      new(websocket, payload).handle
+    end
   end
 end
