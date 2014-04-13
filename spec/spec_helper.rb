@@ -7,4 +7,5 @@ require 'bourne'
 
 RSpec.configure do |config|
   config.mock_with :mocha
+  config.fail_fast = true
 end

@@ -12,12 +12,11 @@ module VegaServer
     def call(env)
       env    = @env_adapter.(env)
       origin = env.origin
-      ws     = Faye::WebSocket.new(env, nil, { ping: 10 })
-
-      VegaServer::OnOpen.call(ws, origin)
-      VegaServer::OnMessage.call(ws)
-
-      ws.rack_response
+      
+      Faye::WebSocket.new(env, nil, { ping: 10 }).tap do |websocket|
+        VegaServer::OnOpen.call(websocket, origin)
+        VegaServer::OnMessage.call(websocket)
+      end.rack_response
     end
 
     def log(string)
