@@ -22,16 +22,6 @@ module VegaServer::IncomingMessages
 
     private
 
-    def add_client_to_room
-      if successful_call?
-        @storage.add_to_room(@room_id, @client_id, @payload)
-      end
-    end
-
-    def successful_call?
-      room_is_empty? || peers_and_clients_match?
-    end
-
     def message
       if room_is_empty?
         VegaServer::OutgoingMessages::CallerSuccess.new
@@ -42,6 +32,10 @@ module VegaServer::IncomingMessages
       end
     end
 
+    def room_is_empty?
+      @room_is_empty ||= @storage.room_is_empty?(@room_id)
+    end
+
     def peers_and_clients_match?
       @peers_and_clients_match ||=
         begin
@@ -50,10 +44,18 @@ module VegaServer::IncomingMessages
         end
     end
 
+    def room
+      @room ||= @storage.room(@room_id)
+    end
+
     def peers_are_acceptable?
       room_first_peer_data[:client_types].any? do |client_type|
         @payload[:acceptable_peer_types].include?(client_type)
       end
+    end
+
+    def room_first_peer_data
+      @room_first_peer_data ||= room.first.last
     end
 
     def client_is_acceptable?
@@ -62,16 +64,14 @@ module VegaServer::IncomingMessages
       end
     end
 
-    def room_first_peer_data
-      @room_first_peer_data ||= room.first.last
+    def add_client_to_room
+      if successful_call?
+        @storage.add_to_room(@room_id, @client_id, @payload)
+      end
     end
 
-    def room
-      @room ||= @storage.room(@room_id)
-    end
-
-    def room_is_empty?
-      @room_is_emtpy ||= @storage.room_is_empty?(@room_id)
+    def successful_call?
+      room_is_empty? || peers_and_clients_match?
     end
   end
 end
