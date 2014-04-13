@@ -33,11 +33,21 @@ describe 'call message is received' do
     end
   end
 
+  shared_examples_for 'successful call message' do
+    it_should_behave_like 'call message'
+
+    it 'adds the client to the room' do
+      send_message(message)
+
+      assert_client_in_room(room_id, client_id)
+    end
+  end
+
   context 'room is empty' do
     let(:response) do
       MultiJson.dump({ event: 'callerSuccess', payload: {} })
     end
-    it_should_behave_like 'call message'
+    it_should_behave_like 'successful call message'
 
     it 'sends a calleeSuccess response to the client' do
       add_listener
@@ -60,12 +70,10 @@ describe 'call message is received' do
         badge: other_badge }
     end
 
-    before do
-      add_to_room(room_id, client_info)
-    end
+    before { add_to_room(room_id, client_info) }
 
     context 'client and peer types match' do
-      it_should_behave_like 'call message'
+      it_should_behave_like 'successful call message'
     end
   end
 end

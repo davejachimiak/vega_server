@@ -122,6 +122,20 @@ VegaServer::CallMessageSteps = RSpec::EM.async_steps do
     end
   end
 
+  def assert_client_in_room(room_id, client_id, &callback)
+    EM.add_timer 0.1 do
+      storage = VegaServer.storage
+
+      if room = storage[room_id]
+        expect(room[client_id]).to_not be_nil
+      else
+        fail 'room does not exist'
+      end
+
+      EM.next_tick(&callback)
+    end
+  end
+
   def assert_response(response, &callback)
     EM.add_timer 0.1 do
       expect(@messages_from_server).to include response
