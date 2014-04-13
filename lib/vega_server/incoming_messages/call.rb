@@ -11,16 +11,14 @@ module VegaServer::IncomingMessages
     def handle
       client_id = @pool.add!(@websocket)
 
-      message = if room_is_empty?
-                  { type: 'callerSuccess',  payload: {} }
-                elsif peers_and_clients_match?
-                  { type: 'calleeSuccess',  payload: {} }
-                else
-                  { type: 'unacceptablePeerTypeError',  payload: {} }
-                end
-
-      if peers_and_clients_match?
+      if room_is_empty?
+        message = { type: 'callerSuccess',  payload: {} }
         @storage.add_to_room(@room_id, client_id, @payload)
+      elsif peers_and_clients_match?
+        message = { type: 'calleeSuccess',  payload: {} }
+        @storage.add_to_room(@room_id, client_id, @payload)
+      else
+        message = { type: 'unacceptablePeerTypeError',  payload: {} }
       end
 
       response = MultiJson.dump(message)
