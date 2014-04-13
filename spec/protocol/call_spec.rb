@@ -38,7 +38,6 @@ describe 'call message is received' do
 
     it 'adds the client to the room' do
       send_message(message)
-
       assert_client_in_room(room_id, client_id)
     end
   end
@@ -51,9 +50,7 @@ describe 'call message is received' do
 
     it 'sends a callerSuccess response to the client' do
       add_listener
-
       send_message(message)
-
       assert_response(response)
     end
   end
@@ -80,9 +77,29 @@ describe 'call message is received' do
 
       it 'sends a calleeSuccess response to the client' do
         add_listener
-
         send_message(message)
+        assert_response(response)
+      end
+    end
 
+    context 'room is full' do
+      let(:response) do
+        MultiJson.dump({ type: 'roomFullError', payload: {} })
+      end
+
+      before { set_max_capacity('/chat', 1) }
+      after { reset_capacities }
+
+      it_should_behave_like 'call message'
+
+      it 'should not add the client to the room' do
+        send_message(message)
+        refute_client_in_room(room_id, client_id)
+      end
+
+      it 'sends a roomFullError response to the client' do
+        add_listener
+        send_message(message)
         assert_response(response)
       end
     end

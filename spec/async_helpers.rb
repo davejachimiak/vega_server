@@ -115,6 +115,21 @@ VegaServer::CallMessageSteps = RSpec::EM.async_steps do
     end
   end
 
+  def set_max_capacity(room_path, capacity, &callback)
+    EM.next_tick do
+      VegaServer.configure do |config|
+        config.set_room_capacities({ room_path => capacity })
+      end
+
+      callback.call
+    end
+  end
+
+  def reset_capacities(&callback)
+    EM.next_tick { VegaServer.set_room_capacities({}) }
+    EM.next_tick(&callback)
+  end
+
   def assert_connection_in_pool(&callback)
     EM.add_timer 0.1 do
       ws = VegaServer.connection_pool[@client_id]

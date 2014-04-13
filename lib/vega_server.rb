@@ -17,6 +17,14 @@ module VegaServer
     @allowed_origins ||= []
   end
 
+  def self.set_room_capacities(room_capacities)
+    @room_capacities = room_capacities
+  end
+
+  def self.room_capacities
+    @room_capacities ||= {}
+  end
+
   def self.storage
     @storage ||= VegaServer::Storage::Memory
   end

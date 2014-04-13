@@ -3,12 +3,13 @@ require 'vega_server/outgoing_messages'
 module VegaServer::IncomingMessages
   class Call
     def initialize(websocket, payload)
-      @websocket = websocket
-      @payload   = payload
-      @room_id   = payload.delete(:room_id)
-      @pool      = VegaServer.connection_pool
-      @storage   = VegaServer.storage
-      @client_id = @pool.add!(@websocket)
+      @websocket       = websocket
+      @payload         = payload
+      @room_id         = payload.delete(:room_id)
+      @pool            = VegaServer.connection_pool
+      @storage         = VegaServer.storage
+      @room_capacities = VegaServer.room_capacities
+      @client_id       = @pool.add!(@websocket)
     end
 
     def handle
@@ -23,13 +24,27 @@ module VegaServer::IncomingMessages
     private
 
     def message
-      if room_is_empty?
+      if room_at_capacity?
+        VegaServer::OutgoingMessages::RoomFullError.new
+      elsif room_is_empty?
         VegaServer::OutgoingMessages::CallerSuccess.new
       elsif peers_and_clients_match?
         VegaServer::OutgoingMessages::CalleeSuccess.new
       else
         VegaServer::OutgoingMessages::UnacceptablePeerTypeError.new
       end
+    end
+
+    def room_at_capacity?
+      return false if @room_capacities.empty?
+
+      capacity = @room_capacities.any? do |capacity|
+        capacity.first == room_path && capacity.last == room.size
+      end
+    end
+
+    def room_path
+      @room_id.match(/(\/.*)\/.*$/)[1]
     end
 
     def room_is_empty?
@@ -71,7 +86,7 @@ module VegaServer::IncomingMessages
     end
 
     def successful_call?
-      room_is_empty? || peers_and_clients_match?
+      !room_at_capacity? && (room_is_empty? || peers_and_clients_match?)
     end
   end
 end
