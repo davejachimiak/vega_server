@@ -13,10 +13,9 @@ module VegaServer
         data        = event.data
         client_data = MultiJson.load(data)['payload']
 
-        client_id   = SecureRandom.uuid
-        room_id     = client_data.delete('roomId')
+        client_id = @pool.add!(@ws)
+        room_id   = client_data.delete('roomId')
 
-        @pool[client_id] = @ws
         @storage.add_to_room(room_id, client_id, client_data)
 
         message  = { event: 'callerSuccess',  payload: {} }

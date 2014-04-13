@@ -3,6 +3,7 @@ require 'faye/websocket'
 require 'vega_server/server'
 require 'vega_server/adapters'
 require 'vega_server/storage'
+require 'vega_server/connection_pool'
 
 module VegaServer
   def self.configure
@@ -34,6 +35,6 @@ module VegaServer
   end
 
   def self.connection_pool
-    @connection_pool ||= {}
+    VegaServer::ConnectionPool
   end
 end
