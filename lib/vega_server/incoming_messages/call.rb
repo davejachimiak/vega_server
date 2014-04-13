@@ -13,8 +13,10 @@ module VegaServer::IncomingMessages
 
       message = if room_is_empty?
                   { type: 'callerSuccess',  payload: {} }
-                else
+                elsif peers_are_acceptable?
                   { type: 'calleeSuccess',  payload: {} }
+                else
+                  { type: 'unacceptablePeerTypeError',  payload: {} }
                 end
 
       if peers_are_acceptable?
