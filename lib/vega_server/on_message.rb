@@ -15,10 +15,9 @@ module VegaServer
 
         client_id   = SecureRandom.uuid
         room_id     = client_data.delete('roomId')
-        client_data = client_data.merge(client_id: client_id)
 
         @pool[client_id] = @ws
-        @storage.add_to_room(room_id, client_data)
+        @storage.add_to_room(room_id, client_id, client_data)
 
         message  = { event: 'callerSuccess',  payload: {} }
         response = MultiJson.dump(message)

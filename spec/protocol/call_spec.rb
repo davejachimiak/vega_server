@@ -64,13 +64,12 @@ describe 'call message is received' do
     let(:other_acceptable_peer_types) { acceptable_peer_types }
     let(:other_badge) { {} }
     let(:client_info) do
-      { client_id: other_client_id,
-        client_types: other_client_types,
+      { client_types: other_client_types,
         acceptable_peer_types: other_acceptable_peer_types,
         badge: other_badge }
     end
 
-    before { add_to_room(room_id, client_info) }
+    before { add_to_room(room_id, other_client_id, client_info) }
 
     context 'client and peer types match' do
       let(:response) do
