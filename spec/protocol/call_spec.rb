@@ -5,7 +5,7 @@ describe 'call message is received' do
   include VegaServer::CallMessageSteps
 
   let(:message) { MultiJson.dump(raw_message) }
-  let(:raw_message) { { event: 'call', payload: payload } }
+  let(:raw_message) { { type: 'call', payload: payload } }
   let(:payload) do
     { roomId: room_id,
       clientTypes: client_types,

@@ -1,29 +1,47 @@
-require 'multi_json'
+require 'vega_server/json'
 
 module VegaServer::Events
   class Message
     include Handleable
 
     def initialize(*args)
-      @pool      = VegaServer.connection_pool
-      @storage   = VegaServer.storage
+      @pool    = VegaServer.connection_pool
+      @storage = VegaServer.storage
 
       super
     end
 
     def handle
-      data        = @event.data
-      client_data = MultiJson.load(data)['payload']
+      case type
+      when 'call'
+        client_id = @pool.add!(@websocket)
+        room_id   = payload.delete(:room_id)
 
-      client_id = @pool.add!(@websocket)
-      room_id   = client_data.delete('roomId')
+        @storage.add_to_room(room_id, client_id, payload)
 
-      @storage.add_to_room(room_id, client_id, client_data)
+        message  = { event: 'callerSuccess',  payload: {} }
+        response = MultiJson.dump(message)
 
-      message  = { event: 'callerSuccess',  payload: {} }
-      response = MultiJson.dump(message)
+        @websocket.send(response)
+      end
+    end
 
-      @websocket.send(response)
+    private
+
+    def type
+      data.type
+    end
+
+    def payload
+      data.payload
+    end
+
+    def data
+      @data ||= VegaServer::Json.to_struct(raw_data)
+    end
+
+    def raw_data
+      event.data
     end
   end
 end
