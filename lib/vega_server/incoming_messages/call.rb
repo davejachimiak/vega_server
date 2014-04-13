@@ -3,6 +3,7 @@ module VegaServer::IncomingMessages
     def initialize(websocket, payload)
       @websocket = websocket
       @payload   = payload
+      @room_id   = payload.delete(:room_id)
       @pool      = VegaServer.connection_pool
       @storage   = VegaServer.storage
     end
@@ -16,7 +17,7 @@ module VegaServer::IncomingMessages
                   { type: 'calleeSuccess',  payload: {} }
                 end
 
-      @storage.add_to_room(room_id, client_id, @payload)
+      @storage.add_to_room(@room_id, client_id, @payload)
 
       response = MultiJson.dump(message)
       @websocket.send(response)
@@ -28,12 +29,8 @@ module VegaServer::IncomingMessages
 
     private
 
-    def room_id
-      @room_id ||= @payload.delete(:room_id)
-    end
-
     def room_is_empty?
-      !@storage[room_id]
+      @storage.room_is_empty?(@room_id)
     end
   end
 end

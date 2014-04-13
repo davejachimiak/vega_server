@@ -6,6 +6,10 @@ module VegaServer
         storage[room_id] = { client_id => client_info }
       end
 
+      def self.room_is_empty?(room_id)
+        !storage[room_id]
+      end
+
       def self.[](room_id)
         storage[room_id]
       end
