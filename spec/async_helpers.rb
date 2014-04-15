@@ -27,6 +27,7 @@ VegaServer::SetupTeardownSteps = RSpec::EM.async_steps do
 
   def stop_server(&callback)
     @server.stop(true)
+    VegaServer.storage.storage.clear
     EM.next_tick(&callback)
   end
 

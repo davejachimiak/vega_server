@@ -4,7 +4,11 @@ describe 'handshake' do
   include VegaServer::HandshakeSteps
 
   before { enable_modified_event }
-  after { disable_modified_event }
+
+  after do
+    disable_modified_event
+    stop_server
+  end
 
   context 'allowed origins are configured' do
     let(:allowed_origins) { [allowed_origin] }
@@ -16,10 +20,7 @@ describe 'handshake' do
       open_socket(origin)
     end
 
-    after do
-      stop_server
-      reset_allowed_origins
-    end
+    after { reset_allowed_origins }
 
     context 'origin of client is allowed' do
       let(:origin) { allowed_origin }
