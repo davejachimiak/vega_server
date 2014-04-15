@@ -1,8 +1,7 @@
 require 'spec_helper'
-require 'multi_json'
 
 describe 'call message is received' do
-  include VegaServer::CallMessageSteps
+  include VegaServer::MessageSteps
 
   let(:message) { MultiJson.dump(raw_message) }
   let(:raw_message) { { type: 'call', payload: payload } }

@@ -3,7 +3,8 @@ require 'vega_server/json'
 
 module VegaServer::Events
   class Message
-    CALL = 'call'.freeze
+    CALL  = 'call'.freeze
+    OFFER = 'offer'.freeze
 
     def initialize(websocket, event)
       @websocket = websocket
@@ -14,6 +15,8 @@ module VegaServer::Events
       case type
       when CALL
         VegaServer::IncomingMessages::Call.handle(@websocket, payload)
+      when OFFER
+        VegaServer::IncomingMessages::Offer.handle(@websocket, payload)
       end
     end
 

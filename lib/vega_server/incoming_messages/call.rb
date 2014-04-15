@@ -38,7 +38,7 @@ module VegaServer::IncomingMessages
     def room_at_capacity?
       return false if @room_capacities.empty?
 
-      capacity = @room_capacities.any? do |capacity|
+      @room_capacities.any? do |capacity|
         capacity.first == room_path && capacity.last == room.size
       end
     end
