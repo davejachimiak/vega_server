@@ -14,7 +14,7 @@ module VegaServer::IncomingMessages
 
     def handle
       VegaServer::OutgoingMessages.send_message(@websocket, message)
-      add_client_to_room
+      add_client_to_room unless room_at_capacity?
     end
 
     def self.handle(websocket, payload)
@@ -28,10 +28,8 @@ module VegaServer::IncomingMessages
         VegaServer::OutgoingMessages::RoomFullError.new
       elsif room_is_empty?
         VegaServer::OutgoingMessages::CallerSuccess.new
-      elsif peers_and_clients_match?
-        VegaServer::OutgoingMessages::CalleeSuccess.new
       else
-        VegaServer::OutgoingMessages::UnacceptablePeerTypeError.new
+        VegaServer::OutgoingMessages::CalleeSuccess.new
       end
     end
 
@@ -51,42 +49,12 @@ module VegaServer::IncomingMessages
       @room_is_empty ||= @storage.room_is_empty?(@room_id)
     end
 
-    def peers_and_clients_match?
-      @peers_and_clients_match ||=
-        begin
-          return true unless room
-          peers_are_acceptable? && client_is_acceptable?
-        end
-    end
-
     def room
       @room ||= @storage.room(@room_id)
     end
 
-    def peers_are_acceptable?
-      room_first_peer_data[:client_types].any? do |client_type|
-        @payload[:acceptable_peer_types].include?(client_type)
-      end
-    end
-
-    def room_first_peer_data
-      @room_first_peer_data ||= room.first.last
-    end
-
-    def client_is_acceptable?
-      room_first_peer_data[:acceptable_peer_types].any? do |acceptable_peer_type|
-        @payload[:client_types].include?(acceptable_peer_type)
-      end
-    end
-
     def add_client_to_room
-      if successful_call?
-        @storage.add_to_room(@room_id, @client_id, @payload)
-      end
-    end
-
-    def successful_call?
-      !room_at_capacity? && (room_is_empty? || peers_and_clients_match?)
+      @storage.add_to_room(@room_id, @client_id, @payload)
     end
   end
 end

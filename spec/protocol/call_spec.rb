@@ -5,15 +5,8 @@ describe 'call message is received' do
 
   let(:message) { MultiJson.dump(raw_message) }
   let(:raw_message) { { type: 'call', payload: payload } }
-  let(:payload) do
-    { roomId: room_id,
-      clientTypes: client_types,
-      acceptablePeerTypes: acceptable_peer_types,
-      badge: badge }
-  end
+  let(:payload) { { roomId: room_id, badge: badge } }
   let(:room_id) { '/chat/abc123' }
-  let(:client_types) { ['any'] }
-  let(:acceptable_peer_types) { ['any'] }
   let(:badge) { {} }
   let(:client_id) { 'yup' }
 
@@ -56,14 +49,8 @@ describe 'call message is received' do
 
   context 'room is not empty' do
     let(:other_client_id) { '4d3d3d3d' }
-    let(:other_client_types) { client_types }
-    let(:other_acceptable_peer_types) { acceptable_peer_types }
     let(:other_badge) { {} }
-    let(:client_info) do
-      { client_types: other_client_types,
-        acceptable_peer_types: other_acceptable_peer_types,
-        badge: other_badge }
-    end
+    let(:client_info) { { badge: other_badge } }
 
     before { add_to_room(room_id, other_client_id, client_info) }
 
@@ -101,35 +88,6 @@ describe 'call message is received' do
         send_message(message)
         assert_response(response)
       end
-    end
-
-    shared_examples_for 'unacceptable peer types' do
-      let(:response) do
-        MultiJson.dump({ type: 'unacceptablePeerTypeError', payload: {} })
-      end
-
-      it_should_behave_like 'call message'
-
-      it 'should not add the client to the room' do
-        send_message(message)
-        refute_client_in_room(room_id, client_id)
-      end
-
-      it 'should send an unacceptablePeerTypeError response to the client' do
-        add_listener
-        send_message(message)
-        assert_response(response)
-      end
-    end
-
-    context "peer's client types do not match any acceptable peer type" do
-      let(:other_client_types) { ['not just any type!'] }
-      it_should_behave_like 'unacceptable peer types'
-    end
-
-    context "peer's acceptable peer types do not match any client types" do
-      let(:other_acceptable_peer_types) { ['not just any type!'] }
-      it_should_behave_like 'unacceptable peer types'
     end
   end
 end
