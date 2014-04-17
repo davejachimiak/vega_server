@@ -13,6 +13,7 @@ module VegaServer::IncomingMessages
         VegaServer::OutgoingMessages.send_message(websocket, message)
       end
 
+      room.delete(client_id)
       @pool.delete(client_id)
       @websocket.close
     end
@@ -24,15 +25,15 @@ module VegaServer::IncomingMessages
     private
 
     def room_peer_websockets
-      room = @storage.find do |r|
-        r.last.keys.include? client_id
-      end
-
-      client_ids = room.last.keys.reject do |key|
+      room.keys.reject do |key|
         key == client_id
-      end
+      end.map { |id| @pool[id] }
+    end
 
-      client_ids.map { |id| @pool[id] }
+    def room
+      @room ||= @storage.find do |r|
+        r.last.keys.include? client_id
+      end.last
     end
 
     def client_id

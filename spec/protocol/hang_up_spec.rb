@@ -55,5 +55,9 @@ describe 'hang up message' do
     refute_connection_in_pool
   end
 
-  it 'removes the client from the room'
+  it 'removes the client from the room' do
+    send_message(client_1, hang_up_message)
+
+    refute_client_in_room(room_id, client_1)
+  end
 end
