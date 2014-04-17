@@ -26,11 +26,6 @@ describe 'answer message' do
 
   before do
     start_server
-  end
-
-  after { stop_server }
-
-  it 'relays the answer to the client with the peerId' do
     open_socket(client_1)
     open_socket(client_2)
     add_listener(client_2)
@@ -38,7 +33,11 @@ describe 'answer message' do
     send_message(client_1, call_message)
     stub_client_id(client_2)
     send_message(client_2, call_message)
+  end
 
+  after { stop_server }
+
+  it 'relays the answer to the client with the peerId' do
     send_message(client_1, answer_message)
     assert_response(client_2, response)
   end
