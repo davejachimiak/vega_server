@@ -79,7 +79,7 @@ VegaServer::MessageSteps = RSpec::EM.async_steps do
     EM.add_timer 0.1 do
       storage = VegaServer.storage
 
-      if room = storage[room_id]
+      if room = storage.room(room_id)
         expect(room[client_id]).to_not be_nil
       else
         fail 'room does not exist'
@@ -93,7 +93,7 @@ VegaServer::MessageSteps = RSpec::EM.async_steps do
     EM.add_timer 0.1 do
       storage = VegaServer.storage
 
-      if room = storage[room_id]
+      if room = storage.room(room_id)
         expect(room[client_id]).to be_nil
       else
         pass

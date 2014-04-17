@@ -20,10 +20,6 @@ module VegaServer
 
       private
 
-      def self.[](room_id)
-        storage[room_id]
-      end
-
       def self.storage
         @storage ||= {}
       end
