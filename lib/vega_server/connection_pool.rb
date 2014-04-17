@@ -14,6 +14,10 @@ module VegaServer
       end
     end
 
+    def self.delete(client_id)
+      pool.delete(client_id)
+    end
+
     def self.pool
       @pool ||= {}
     end

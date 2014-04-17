@@ -49,6 +49,11 @@ describe 'hang up message' do
     assert_socket_closed(client_1)
   end
 
-  it 'removes the client from the connection pool'
+  it 'removes the client from the connection pool' do
+    send_message(client_1, hang_up_message)
+
+    refute_connection_in_pool
+  end
+
   it 'removes the client from the room'
 end

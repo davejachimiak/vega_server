@@ -67,6 +67,14 @@ VegaServer::MessageSteps = RSpec::EM.async_steps do
     end
   end
 
+  def refute_connection_in_pool(&callback)
+    EM.add_timer 0.1 do
+      ws = VegaServer.connection_pool[@client_id]
+      expect(ws).to be_nil
+      EM.next_tick(&callback)
+    end
+  end
+
   def assert_client_in_room(room_id, client_id, &callback)
     EM.add_timer 0.1 do
       storage = VegaServer.storage
