@@ -2,6 +2,7 @@ require 'spec_helper'
 
 describe 'hang up message' do
   include VegaServer::MessageSteps
+  include VegaServer::HandshakeSteps
 
   let(:client_1) { 'client_1' }
   let(:client_2) { 'client_2' }
@@ -31,18 +32,23 @@ describe 'hang up message' do
     add_listener(client_3)
     stub_client_id(client_1)
     send_message(client_1, call_message)
-
-    send_message(client_1, hang_up_message)
   end
 
   after { stop_server }
 
   it 'sends a peer hang up message to the other clients' do
+    send_message(client_1, hang_up_message)
+
     assert_response(client_2, response)
     assert_response(client_3, response)
   end
 
-  it 'closes the client websocket that hung up'
+  it 'closes the client websocket that hung up' do
+    send_message(client_1, hang_up_message)
+
+    assert_socket_closed(client_1)
+  end
+
   it 'removes the client from the connection pool'
   it 'removes the client from the room'
 end

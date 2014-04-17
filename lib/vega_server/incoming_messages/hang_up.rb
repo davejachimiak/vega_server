@@ -12,6 +12,8 @@ module VegaServer::IncomingMessages
       room_peer_websockets.each do |websocket|
         VegaServer::OutgoingMessages.send_message(websocket, message)
       end
+
+      @websocket.close
     end
 
     def self.handle(websocket)
