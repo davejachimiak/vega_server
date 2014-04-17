@@ -3,8 +3,8 @@ require 'spec_helper'
 describe 'offer message is received' do
   include VegaServer::MessageSteps
 
-  let(:peer_1) { 'peer_1' }
-  let(:peer_2) { 'peer_2' }
+  let(:client_1) { 'client_1' }
+  let(:client_2) { 'client_2' }
   let(:client_3) { 'client_3' }
   let(:offer_message) do
     MultiJson.dump({ type: 'offer', payload: { offer: offer } })
@@ -33,22 +33,22 @@ describe 'offer message is received' do
 
   before do
     start_server
+    open_socket(client_1)
+    open_socket(client_2)
     open_socket(client_3)
-    open_peer_socket(peer_1)
-    open_peer_socket(peer_2)
-    send_peer_message(peer_1, call_message)
-    send_peer_message(peer_2, call_message)
-    add_peer_listener(peer_1)
-    add_peer_listener(peer_2)
-    stub_client_id(client_id)
+    send_message(client_2, call_message)
     send_message(client_3, call_message)
+    add_listener(client_2)
+    add_listener(client_3)
+    stub_client_id(client_id)
+    send_message(client_1, call_message)
   end
 
   after { stop_server }
 
   it "relays the message to the client's peers" do
-    send_message(client_3, offer_message)
-    assert_peer_response(peer_1, response)
-    assert_peer_response(peer_2, response)
+    send_message(client_1, offer_message)
+    assert_response(client_2, response)
+    assert_response(client_3, response)
   end
 end
