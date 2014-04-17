@@ -6,29 +6,20 @@ describe 'offer message is received' do
   let(:client_1) { 'client_1' }
   let(:client_2) { 'client_2' }
   let(:client_3) { 'client_3' }
-  let(:offer_message) do
-    MultiJson.dump({ type: 'offer', payload: { offer: offer } })
-  end
   let(:call_message) do
     MultiJson.dump({ type: 'call', payload: call_payload })
   end
-  let(:call_payload) do
-    { roomId: room_id,
-      clientTypes: client_types,
-      acceptablePeerTypes: acceptable_peer_types,
-      badge: badge }
+  let(:call_payload) { { roomId: room_id, badge: badge } }
+  let(:offer_message) do
+    MultiJson.dump({ type: 'offer', payload: { offer: offer } })
   end
   let(:room_id) { '/chat/abc123' }
-  let(:client_types) { ['any'] }
-  let(:acceptable_peer_types) { ['any'] }
   let(:badge) { {} }
   let(:client_id) { 'yup' }
   let(:response) do
     MultiJson.dump({ type: 'offer', payload: response_payload })
   end
-  let(:response_payload) do
-    { offer: offer, peerId: client_id }
-  end
+  let(:response_payload) { { offer: offer, peerId: client_id } }
   let(:offer) { { some: :stuff } }
 
   before do
