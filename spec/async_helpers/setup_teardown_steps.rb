@@ -31,25 +31,26 @@ VegaServer::SetupTeardownSteps = RSpec::EM.async_steps do
     EM.next_tick(&callback)
   end
 
-  def open_socket(origin=nil, &callback)
+  def open_socket(client, origin=nil, &callback)
     done = false
 
     resume = lambda do |open|
       unless done
         done = true
-        @open = open
+        instance_variable_set "@#{client}_open", open
         callback.call
       end
     end
 
     VegaServer.event_adapter.origin = origin if origin
 
-    @ws = Faye::WebSocket::Client.new('ws://0.0.0.0:9292')
+    ws = Faye::WebSocket::Client.new('ws://0.0.0.0:9292')
+    instance_variable_set "@#{client}", ws
 
-    @ws.on(:open) { |e| resume.call(true) }
-    @ws.onclose = lambda do |e|
-      @open = false
-      @ws = nil
+    ws.on(:open) { |e| resume.call(true) }
+    ws.onclose = lambda do |e|
+      instance_variable_set "@#{client}_open", false
+      ws = nil
     end
   end
 

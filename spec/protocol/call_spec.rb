@@ -3,6 +3,7 @@ require 'spec_helper'
 describe 'call message is received' do
   include VegaServer::MessageSteps
 
+  let(:client) { 'client' }
   let(:message) { MultiJson.dump(raw_message) }
   let(:raw_message) { { type: 'call', payload: payload } }
   let(:payload) { { roomId: room_id, badge: badge } }
@@ -12,7 +13,7 @@ describe 'call message is received' do
 
   before do
     start_server
-    open_socket
+    open_socket(client)
     stub_client_id(client_id)
   end
 
@@ -20,7 +21,7 @@ describe 'call message is received' do
 
   shared_examples_for 'call message' do
     it 'adds the connection to the pool' do
-      send_message(message)
+      send_message(client, message)
       assert_connection_in_pool
     end
   end
@@ -29,7 +30,7 @@ describe 'call message is received' do
     it_should_behave_like 'call message'
 
     it 'adds the client to the room' do
-      send_message(message)
+      send_message(client, message)
       assert_client_in_room(room_id, client_id)
     end
   end
@@ -41,9 +42,9 @@ describe 'call message is received' do
     it_should_behave_like 'successful call message'
 
     it 'sends a callerSuccess response to the client' do
-      add_listener
-      send_message(message)
-      assert_response(response)
+      add_listener(client)
+      send_message(client, message)
+      assert_response(client, response)
     end
   end
 
@@ -62,9 +63,9 @@ describe 'call message is received' do
       it_should_behave_like 'successful call message'
 
       it 'sends a calleeSuccess response to the client' do
-        add_listener
-        send_message(message)
-        assert_response(response)
+        add_listener(client)
+        send_message(client, message)
+        assert_response(client, response)
       end
     end
 
@@ -79,14 +80,14 @@ describe 'call message is received' do
       it_should_behave_like 'call message'
 
       it 'should not add the client to the room' do
-        send_message(message)
+        send_message(client, message)
         refute_client_in_room(room_id, client_id)
       end
 
       it 'sends a roomFullError response to the client' do
-        add_listener
-        send_message(message)
-        assert_response(response)
+        add_listener(client)
+        send_message(client, message)
+        assert_response(client, response)
       end
     end
   end

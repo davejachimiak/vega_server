@@ -58,20 +58,27 @@ VegaServer::MessageSteps = RSpec::EM.async_steps do
     end
   end
 
-  def add_listener(&callback)
+  def add_listener(client, &callback)
     EM.next_tick do
-      @ws.on :message do |event|
-        @messages_from_server ||= []
-        @messages_from_server.push event.data
+      ws = instance_variable_get "@#{client}"
+
+      ws.on :message do |event|
+        messages = instance_variable_get "@#{client}_messages"
+
+        messages ||= []
+        messages.push event.data
+
+        instance_variable_set "@#{client}_messages", messages
       end
 
       callback.call
     end
   end
 
-  def send_message(message, &callback)
+  def send_message(client, message, &callback)
     EM.add_timer 0.1 do
-      @ws.send(message)
+      ws = instance_variable_get "@#{client}"
+      ws.send(message)
       EM.next_tick(&callback)
     end
   end
@@ -127,9 +134,10 @@ VegaServer::MessageSteps = RSpec::EM.async_steps do
     end
   end
 
-  def assert_response(response, &callback)
+  def assert_response(client, response, &callback)
     EM.add_timer 0.1 do
-      expect(@messages_from_server).to include response
+      messages = instance_variable_get "@#{client}_messages"
+      expect(messages).to include response
       callback.call
     end
   end
