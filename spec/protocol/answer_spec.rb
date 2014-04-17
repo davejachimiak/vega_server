@@ -13,15 +13,15 @@ describe 'answer message' do
       badge: badge }
   end
   let(:answer_message) do
-    MultiJson.dump({ type: 'answer', payload: { answer: answer } })
+    MultiJson.dump({ type: 'answer',
+                     payload: { answer: answer, peerId: client_2 } })
   end
   let(:room_id) { '/chat/abc123' }
   let(:badge) { {} }
-  let(:client_id) { 'yup' }
   let(:response) do
     MultiJson.dump({ type: 'answer', payload: response_payload })
   end
-  let(:response_payload) { { answer: answer, peerId: client_id } }
+  let(:response_payload) { { answer: answer, peerId: client_1 } }
   let(:answer) { { some: :stuff } }
 
   before do
@@ -34,9 +34,10 @@ describe 'answer message' do
     open_socket(client_1)
     open_socket(client_2)
     add_listener(client_2)
-    send_message(client_2, call_message)
-    stub_client_id(client_id)
+    stub_client_id(client_1)
     send_message(client_1, call_message)
+    stub_client_id(client_2)
+    send_message(client_2, call_message)
 
     send_message(client_1, answer_message)
     assert_response(client_2, response)
