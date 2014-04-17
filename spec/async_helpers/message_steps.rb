@@ -1,32 +1,6 @@
 VegaServer::MessageSteps = RSpec::EM.async_steps do
   include VegaServer::SetupTeardownSteps
 
-  def open_peer_socket(peer, &callback)
-    done = false
-
-    resume = lambda do |open|
-      unless done
-        done = true
-        callback.call
-      end
-    end
-
-    peer = instance_variable_set "@#{peer}", Faye::WebSocket::Client.new('ws://0.0.0.0:9292')
-
-    peer.on(:open) { |e| resume.call(true) }
-    peer.onclose = lambda do |e|
-      peer = nil
-    end
-  end
-
-  def send_peer_message(peer, message, &callback)
-    EM.add_timer 0.1 do
-      ws = instance_variable_get "@#{peer}"
-      ws.send(message)
-      EM.next_tick(&callback)
-    end
-  end
-
   def add_to_room(room_id, client_id, client_info, &callback)
     EM.next_tick do
       storage = VegaServer.storage
@@ -42,19 +16,6 @@ VegaServer::MessageSteps = RSpec::EM.async_steps do
     EM.next_tick do
       SecureRandom.stubs(:uuid).returns client_id
       EM.next_tick(&callback)
-    end
-  end
-
-  def add_peer_listener(peer, &callback)
-    EM.next_tick do
-      ws       = instance_variable_get "@#{peer}"
-      messages = instance_variable_set "@#{peer}_messages_from_server", []
-
-      ws.on :message do |event|
-        messages.push event.data
-      end
-
-      callback.call
     end
   end
 
@@ -137,14 +98,6 @@ VegaServer::MessageSteps = RSpec::EM.async_steps do
   def assert_response(client, response, &callback)
     EM.add_timer 0.1 do
       messages = instance_variable_get "@#{client}_messages"
-      expect(messages).to include response
-      callback.call
-    end
-  end
-
-  def assert_peer_response(peer, response, &callback)
-    EM.add_timer 0.1 do
-      messages = instance_variable_get "@#{peer}_messages_from_server"
       expect(messages).to include response
       callback.call
     end
