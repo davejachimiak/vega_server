@@ -13,7 +13,7 @@ VegaServer::MessageSteps = RSpec::EM.async_steps do
   def stub_client_id(client_id, &callback)
     @client_id = client_id
 
-    EM.next_tick do
+    EM.add_timer 0.1 do
       SecureRandom.stubs(:uuid).returns client_id
       EM.next_tick(&callback)
     end
