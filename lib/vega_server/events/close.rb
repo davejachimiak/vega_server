@@ -9,9 +9,7 @@ module VegaServer::Events
 
     def handle
       room_peer_websockets.each do |websocket|
-        if websocket
-          VegaServer::OutgoingMessages.send_message(websocket, message)
-        end
+        VegaServer::OutgoingMessages.send_message(websocket, message)
       end
     end
 
