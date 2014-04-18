@@ -11,6 +11,8 @@ module VegaServer::Events
       room_peer_websockets.each do |websocket|
         VegaServer::OutgoingMessages.send_message(websocket, message)
       end
+
+      @pool.delete(client_id)
     end
 
     def self.handle(websocket, event)

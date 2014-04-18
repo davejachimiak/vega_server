@@ -40,7 +40,7 @@ describe 'unexpected close' do
     assert_response(client_3, response)
   end
 
-  xit 'removes the client from the connection pool' do
+  it 'removes the client from the connection pool' do
     close_socket(client_1)
 
     refute_connection_in_pool
