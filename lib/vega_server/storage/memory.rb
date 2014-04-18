@@ -19,12 +19,21 @@ module VegaServer
         rooms[room_id]
       end
 
+      def self.remove_client(client_id)
+        client_room(client_id).delete(client_id)
+        clients.delete(client_id)
+      end
+
       def self.room_is_empty?(room_id)
         !rooms[room_id]
       end
 
       def self.room(room_id)
         rooms[room_id]
+      end
+
+      def self.client(client_id)
+        clients[client_id]
       end
 
       private

@@ -13,7 +13,7 @@ module VegaServer::IncomingMessages
         VegaServer::OutgoingMessages.send_message(websocket, message)
       end
 
-      room.delete(client_id)
+      @storage.remove_client(client_id)
       @pool.delete(client_id)
       @websocket.close
     end
