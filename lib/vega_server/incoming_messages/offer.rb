@@ -22,11 +22,9 @@ module VegaServer::IncomingMessages
     private
 
     def room_peer_websockets
-      room = @storage.find do |r|
-        r.last.keys.include? client_id
-      end
+      room = @storage.client_room(client_id)
 
-      client_ids = room.last.keys.reject do |key|
+      client_ids = room.reject do |key|
         key == client_id
       end
 

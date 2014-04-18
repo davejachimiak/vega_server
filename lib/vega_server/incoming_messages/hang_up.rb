@@ -25,15 +25,13 @@ module VegaServer::IncomingMessages
     private
 
     def room_peer_websockets
-      room.keys.reject do |key|
+      room.reject do |key|
         key == client_id
       end.map { |id| @pool[id] }
     end
 
     def room
-      @room ||= @storage.find do |r|
-        r.last.keys.include? client_id
-      end.last
+      @room ||= @storage.client_room(client_id)
     end
 
     def client_id

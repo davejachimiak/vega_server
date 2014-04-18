@@ -1,10 +1,10 @@
 VegaServer::MessageSteps = RSpec::EM.async_steps do
   include VegaServer::SetupTeardownSteps
 
-  def add_to_room(room_id, client_id, client_info, &callback)
+  def add_to_room(client_id, client_info, &callback)
     EM.next_tick do
       storage = VegaServer.storage
-      storage.add_to_room(room_id, client_id, client_info)
+      storage.add_to_room(client_id, client_info)
     end
 
     EM.next_tick(&callback)
@@ -80,7 +80,7 @@ VegaServer::MessageSteps = RSpec::EM.async_steps do
       storage = VegaServer.storage
 
       if room = storage.room(room_id)
-        expect(room[client_id]).to_not be_nil
+        expect(room.include?(client_id)).to be_true
       else
         fail 'room does not exist'
       end
@@ -94,7 +94,7 @@ VegaServer::MessageSteps = RSpec::EM.async_steps do
       storage = VegaServer.storage
 
       if room = storage.room(room_id)
-        expect(room[client_id]).to be_nil
+        expect(room.include?(client_id)).to be_false
       else
         pass
       end

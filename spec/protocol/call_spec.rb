@@ -51,9 +51,9 @@ describe 'call message is received' do
   context 'room is not empty' do
     let(:other_client_id) { '4d3d3d3d' }
     let(:other_badge) { {} }
-    let(:client_info) { { badge: other_badge } }
+    let(:client_info) { { badge: other_badge, room_id: room_id } }
 
-    before { add_to_room(room_id, other_client_id, client_info) }
+    before { add_to_room(other_client_id, client_info) }
 
     context 'client and peer types match' do
       let(:response) do

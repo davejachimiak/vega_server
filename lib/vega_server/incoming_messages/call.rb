@@ -5,7 +5,7 @@ module VegaServer::IncomingMessages
     def initialize(websocket, payload)
       @websocket       = websocket
       @payload         = payload
-      @room_id         = payload.delete(:room_id)
+      @room_id         = payload[:room_id]
       @pool            = VegaServer.connection_pool
       @storage         = VegaServer.storage
       @room_capacities = VegaServer.room_capacities
@@ -54,7 +54,7 @@ module VegaServer::IncomingMessages
     end
 
     def add_client_to_room
-      @storage.add_to_room(@room_id, @client_id, @payload)
+      @storage.add_to_room(@client_id, @payload)
     end
   end
 end
