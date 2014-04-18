@@ -14,9 +14,10 @@ module VegaServer
       end
 
       def self.client_room(client_id)
-        room_id = clients[client_id][:room_id]
-
-        rooms[room_id]
+        if client = client(client_id)
+          room_id = client[:room_id]
+          rooms[room_id]
+        end
       end
 
       def self.remove_client(client_id)

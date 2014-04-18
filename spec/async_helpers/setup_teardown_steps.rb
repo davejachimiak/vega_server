@@ -58,4 +58,13 @@ VegaServer::SetupTeardownSteps = RSpec::EM.async_steps do
     EM.next_tick { VegaServer.allow_origins([]) }
     EM.next_tick(&callback)
   end
+
+  def close_socket(client, &callback)
+    ws = instance_variable_get "@#{client}"
+
+    EM.next_tick do
+      ws.close
+      EM.next_tick(&callback)
+    end
+  end
 end

@@ -8,6 +8,7 @@ module VegaServer
       Faye::WebSocket.new(env, nil, { ping: 10 }).tap do |websocket|
         AddEventListener.call(:open, Events::Open, websocket)
         AddEventListener.call(:message, Events::Message, websocket)
+        AddEventListener.call(:close, Events::Close, websocket)
       end.rack_response
     end
 
