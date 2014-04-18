@@ -46,7 +46,7 @@ describe 'unexpected close' do
     refute_connection_in_pool
   end
 
-  xit 'removes the client from the room' do
+  it 'removes the client from the room' do
     close_socket(client_1)
 
     refute_client_in_room(room_id, client_1)

@@ -21,8 +21,10 @@ module VegaServer
       end
 
       def self.remove_client(client_id)
-        client_room(client_id).delete(client_id)
-        clients.delete(client_id)
+        if client_room = client_room(client_id)
+          client_room.delete(client_id)
+          clients.delete(client_id)
+        end
       end
 
       def self.room_is_empty?(room_id)
