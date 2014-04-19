@@ -5,14 +5,13 @@ module VegaServer::IncomingMessages
     def initialize(websocket, payload)
       @websocket = websocket
       @offer     = payload[:offer]
+      @peer_id   = payload[:peer_id]
       @pool      = VegaServer.connection_pool
       @storage   = VegaServer.storage
     end
 
     def handle
-      room_peer_websockets.each do |websocket|
-        VegaServer::OutgoingMessages.send_message(websocket, message)
-      end
+      VegaServer::OutgoingMessages.send_message(peer_websocket, message)
     end
 
     def self.handle(websocket, payload)
@@ -21,14 +20,8 @@ module VegaServer::IncomingMessages
 
     private
 
-    def room_peer_websockets
-      room = @storage.client_room(client_id)
-
-      client_ids = room.reject do |key|
-        key == client_id
-      end
-
-      client_ids.map { |id| @pool[id] }
+    def peer_websocket
+      @pool[@peer_id]
     end
 
     def client_id

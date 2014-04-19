@@ -55,7 +55,9 @@ describe 'call message is received' do
 
     before { add_to_room(other_client_id, client_info) }
 
-    context 'client and peer types match' do
+    context 'room is not full' do
+      #TODO Protocol change: send all peerIds in room to callee
+
       let(:response) do
         MultiJson.dump({ type: 'calleeSuccess', payload: {} })
       end
