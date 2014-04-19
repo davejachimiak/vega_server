@@ -1,6 +1,7 @@
 require 'spec_helper'
 
 describe 'offer message is received' do
+  # TODO: Should act like an answer message (route to peerId)
   include VegaServer::MessageSteps
 
   let(:client_1) { 'client_1' }
