@@ -1,9 +1,9 @@
 module VegaServer::OutgoingMessages
-  class CallerSuccess
+  class RoomFull
     include ClientMessageable
 
     def type
-      'callerSuccess'
+      'roomFull'
     end
 
     def payload

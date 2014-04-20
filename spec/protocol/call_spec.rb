@@ -37,11 +37,13 @@ describe 'call message is received' do
 
   context 'room is empty' do
     let(:response) do
-      MultiJson.dump({ type: 'callerSuccess', payload: {} })
+      MultiJson.dump({ type: 'callAccepted',
+                       payload: { peerIds: [] } })
     end
+
     it_should_behave_like 'successful call message'
 
-    it 'sends a callerSuccess response to the client' do
+    it 'sends a `callAccepted` response with no peerIds' do
       add_listener(client)
       send_message(client, message)
       assert_response(client, response)
@@ -61,13 +63,13 @@ describe 'call message is received' do
 
     context 'room is not full' do
       let(:response) do
-        MultiJson.dump({ type: 'calleeSuccess',
+        MultiJson.dump({ type: 'callAccepted',
                          payload: { peerIds: [client_id1, client_id2] } })
       end
 
       it_should_behave_like 'successful call message'
 
-      it 'sends a calleeSuccess response to the client' do
+      it 'sends a callAccepted response with the peer ids' do
         add_listener(client)
         send_message(client, message)
         assert_response(client, response)
@@ -76,10 +78,10 @@ describe 'call message is received' do
 
     context 'room is full' do
       let(:response) do
-        MultiJson.dump({ type: 'roomFullError', payload: {} })
+        MultiJson.dump({ type: 'roomFull', payload: {} })
       end
 
-      before { set_max_capacity('/chat', 1) }
+      before { set_max_capacity('/chat', 2) }
       after { reset_capacities }
 
       it_should_behave_like 'call message'
@@ -89,7 +91,7 @@ describe 'call message is received' do
         refute_client_in_room(room_id, client_id)
       end
 
-      it 'sends a roomFullError response to the client' do
+      it 'sends a roomFull response to the client' do
         add_listener(client)
         send_message(client, message)
         assert_response(client, response)

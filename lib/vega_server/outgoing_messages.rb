@@ -1,8 +1,6 @@
 require 'vega_server/outgoing_messages/client_messageable'
-require 'vega_server/outgoing_messages/room_full_error'
-require 'vega_server/outgoing_messages/caller_success'
-require 'vega_server/outgoing_messages/callee_success'
-require 'vega_server/outgoing_messages/unacceptable_peer_type_error'
+require 'vega_server/outgoing_messages/room_full'
+require 'vega_server/outgoing_messages/call_accepted'
 
 module VegaServer
   module OutgoingMessages

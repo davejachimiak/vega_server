@@ -25,17 +25,13 @@ module VegaServer::IncomingMessages
 
     def message
       if room_at_capacity?
-        VegaServer::OutgoingMessages::RoomFullError.new
-      elsif room_is_empty?
-        VegaServer::OutgoingMessages::CallerSuccess.new
+        VegaServer::OutgoingMessages::RoomFull.new
       else
-        VegaServer::OutgoingMessages::CalleeSuccess.new(peer_ids)
+        VegaServer::OutgoingMessages::CallAccepted.new(peer_ids)
       end
     end
 
     def peer_ids
-      room = @storage.room(@room_id)
-
       if room
         client_ids = room.reject do |key|
           key == @client_id
@@ -55,10 +51,6 @@ module VegaServer::IncomingMessages
 
     def room_path
       @room_id.match(/(\/.*)\/.*$/)[1]
-    end
-
-    def room_is_empty?
-      @room_is_empty ||= @storage.room_is_empty?(@room_id)
     end
 
     def room

@@ -1,5 +1,5 @@
 module VegaServer::OutgoingMessages
-  class CalleeSuccess
+  class CallAccepted
     include ClientMessageable
 
     def initialize(peer_ids)
@@ -7,7 +7,7 @@ module VegaServer::OutgoingMessages
     end
 
     def type
-      'calleeSuccess'
+      'callAccepted'
     end
 
     def payload
