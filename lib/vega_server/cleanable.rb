@@ -1,11 +1,11 @@
 module VegaServer
   module Cleanable
+    include Meddleable
+
     attr_reader :websocket
 
     def initialize(websocket)
       @websocket = websocket
-      @pool      = VegaServer.connection_pool
-      @storage   = VegaServer.storage
     end
 
     def handle
@@ -26,20 +26,20 @@ module VegaServer
     def room_peer_websockets
       room.reject do |key|
         key == client_id
-      end.map { |id| @pool[id] }
+      end.map { |id| pool[id] }
     end
 
     def room
-      @storage.client_room(client_id)
+      storage.client_room(client_id)
     end
 
     def client_id
-      @pool.inverted_pool[websocket]
+      pool.inverted_pool[websocket]
     end
 
     def remove_client
-      @storage.remove_client(client_id)
-      @pool.delete(client_id)
+      storage.remove_client(client_id)
+      pool.delete(client_id)
     end
 
     def after_remove_client

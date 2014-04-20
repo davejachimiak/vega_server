@@ -1,15 +1,16 @@
 require 'vega_server/outgoing_messages'
+require 'vega_server/meddleable'
 
 module VegaServer::IncomingMessages
   class Call
+    include VegaServer::Meddleable
+
     def initialize(websocket, payload)
       @websocket       = websocket
       @payload         = payload
       @room_id         = payload[:room_id]
-      @pool            = VegaServer.connection_pool
-      @storage         = VegaServer.storage
       @room_capacities = VegaServer.room_capacities
-      @client_id       = @pool.add!(@websocket)
+      @client_id       = pool.add!(@websocket)
     end
 
     def handle
@@ -44,11 +45,11 @@ module VegaServer::IncomingMessages
     end
 
     def room
-      @room ||= @storage.room(@room_id)
+      @room ||= storage.room(@room_id)
     end
 
     def add_client_to_room
-      @storage.add_to_room(@client_id, @payload)
+      storage.add_to_room(@client_id, @payload)
     end
   end
 end

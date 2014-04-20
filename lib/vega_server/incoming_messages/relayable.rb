@@ -1,13 +1,15 @@
+require 'vega_server/meddleable'
+
 module VegaServer::IncomingMessages
   module Relayable
+    include VegaServer::Meddleable
+
     attr_reader :payload
 
     def initialize(websocket, payload)
       @websocket = websocket
       @payload   = payload
       @peer_id   = @payload[:peer_id]
-      @pool      = VegaServer.connection_pool
-      @storage   = VegaServer.storage
     end
 
     def handle
@@ -17,11 +19,11 @@ module VegaServer::IncomingMessages
     private
 
     def peer_websocket
-      @pool[@peer_id]
+      pool[@peer_id]
     end
 
     def client_id
-      @pool.inverted_pool[@websocket]
+      pool.inverted_pool[@websocket]
     end
     
     def message
