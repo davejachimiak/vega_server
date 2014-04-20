@@ -15,7 +15,6 @@ module VegaServer::Events
     end
 
     def self.handle(websocket, event)
-      event = VegaServer.event_adapter.new(event)
       new(websocket, event).handle
     end
 
