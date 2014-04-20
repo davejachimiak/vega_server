@@ -1,6 +1,6 @@
 # VegaServer
 
-TODO: Write a gem description
+A WebSocket server that implements the [Vega protocol](https://gist.github.com/davejachimiak/34f7bc4a9896fe72979e).
 
 ## Installation
 
