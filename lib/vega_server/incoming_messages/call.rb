@@ -29,7 +29,19 @@ module VegaServer::IncomingMessages
       elsif room_is_empty?
         VegaServer::OutgoingMessages::CallerSuccess.new
       else
-        VegaServer::OutgoingMessages::CalleeSuccess.new
+        VegaServer::OutgoingMessages::CalleeSuccess.new(peer_ids)
+      end
+    end
+
+    def peer_ids
+      room = @storage.room(@room_id)
+
+      if room
+        client_ids = room.reject do |key|
+          key == @client_id
+        end
+      else
+        []
       end
     end
 

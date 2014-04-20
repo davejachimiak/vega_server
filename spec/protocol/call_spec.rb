@@ -49,17 +49,20 @@ describe 'call message is received' do
   end
 
   context 'room is not empty' do
-    let(:other_client_id) { '4d3d3d3d' }
+    let(:client_id1) { '4d3d3d3d' }
+    let(:client_id2) { 'tayne' }
     let(:other_badge) { {} }
     let(:client_info) { { badge: other_badge, room_id: room_id } }
 
-    before { add_to_room(other_client_id, client_info) }
+    before do
+      add_to_room(client_id1, client_info)
+      add_to_room(client_id2, client_info)
+    end
 
     context 'room is not full' do
-      #TODO Protocol change: send all peerIds in room to callee
-
       let(:response) do
-        MultiJson.dump({ type: 'calleeSuccess', payload: {} })
+        MultiJson.dump({ type: 'calleeSuccess',
+                         payload: { peerIds: [client_id1, client_id2] } })
       end
 
       it_should_behave_like 'successful call message'
