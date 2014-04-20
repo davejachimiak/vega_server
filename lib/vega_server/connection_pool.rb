@@ -5,9 +5,7 @@ module VegaServer
     end
 
     def self.add!(websocket)
-      if client_id = inverted_pool[websocket]
-        client_id
-      else
+      inverted_pool.fetch(websocket) do |websocket|
         client_id = SecureRandom.uuid
         pool[client_id] = websocket
         client_id
