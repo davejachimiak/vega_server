@@ -14,11 +14,11 @@ describe 'offer message is received' do
                      payload: { offer: offer, peerId: client_2 } })
   end
   let(:room_id) { '/chat/abc123' }
-  let(:badge) { {} }
+  let(:badge) { { user_id: 'fontana'} }
   let(:response) do
     MultiJson.dump({ type: 'offer', payload: response_payload })
   end
-  let(:response_payload) { { offer: offer, peerId: client_1 } }
+  let(:response_payload) { { offer: offer, peerId: client_1, peerBadge: badge } }
   let(:offer) { { some: :stuff } }
 
   before do

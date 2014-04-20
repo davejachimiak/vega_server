@@ -17,11 +17,11 @@ describe 'answer message' do
                      payload: { answer: answer, peerId: client_2 } })
   end
   let(:room_id) { '/chat/abc123' }
-  let(:badge) { {} }
+  let(:badge) { { user_id: 'fontana'} }
   let(:response) do
     MultiJson.dump({ type: 'answer', payload: response_payload })
   end
-  let(:response_payload) { { answer: answer, peerId: client_1 } }
+  let(:response_payload) { { answer: answer, peerId: client_1, peerBadge: badge } }
   let(:answer) { { some: :stuff } }
 
   before do
