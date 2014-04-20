@@ -14,21 +14,22 @@ module VegaServer
       end
 
       def self.client_room(client_id)
-        if client = client(client_id)
-          room_id = client[:room_id]
+        if room_id = client_room_id(client_id)
           rooms[room_id]
+        else
+          []
         end
       end
 
       def self.remove_client(client_id)
-        if client_room = client_room(client_id)
-          client_room.delete(client_id)
-          clients.delete(client_id)
-        end
-      end
+        client_room(client_id).delete(client_id)
 
-      def self.room_is_empty?(room_id)
-        !rooms[room_id]
+        if client_room(client_id).empty?
+          room_id = client_room_id(client_id)
+          rooms.delete(room_id)
+        end
+
+        clients.delete(client_id)
       end
 
       def self.room(room_id)
@@ -40,6 +41,12 @@ module VegaServer
       end
 
       private
+
+      def self.client_room_id(client_id)
+        if client = client(client_id)
+          client[:room_id]
+        end
+      end
 
       def self.clients
         storage[CLIENTS] ||= {}

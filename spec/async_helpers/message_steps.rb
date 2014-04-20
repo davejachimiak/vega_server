@@ -97,8 +97,6 @@ VegaServer::MessageSteps = RSpec::EM.async_steps do
       if room = storage.room(room_id)
         expect(room.include?(client_id)).to be_false
         expect(storage.client(client_id)).to be_nil
-      else
-        pass
       end
 
       EM.next_tick(&callback)

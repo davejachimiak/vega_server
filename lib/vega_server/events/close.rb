@@ -15,6 +15,7 @@ module VegaServer::Events
 
       @storage.remove_client(client_id)
       @pool.delete(client_id)
+      @websocket = nil
     end
 
     def self.handle(websocket, event)
@@ -24,17 +25,13 @@ module VegaServer::Events
     private
 
     def room_peer_websockets
-      room = @storage.client_room(client_id)
+      room.reject do |key|
+        key == client_id
+      end.map { |id| @pool[id] }
+    end
 
-      if room
-        client_ids = room.reject do |key|
-          key == client_id
-        end
-
-        client_ids.map { |id| @pool[id] }
-      else
-        []
-      end
+    def room
+      @storage.client_room(client_id)
     end
 
     def client_id
