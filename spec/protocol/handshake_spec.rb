@@ -12,8 +12,8 @@ describe 'handshake' do
   end
 
   context 'allowed origins are configured' do
-    let(:allowed_origins) { [allowed_origin] }
-    let(:allowed_origin) { 'http://www.example.org' }
+    let(:allowed_origins) { ['http://www.example.org'] }
+    let(:allowed_origin) { /example.org/ }
 
     before do
       configure_origins(allowed_origins)

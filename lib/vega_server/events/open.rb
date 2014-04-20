@@ -22,7 +22,10 @@ module VegaServer::Events
 
     def origin_allowed?
       return true if @allowed_origins.empty?
-      @allowed_origins.include?(@origin)
+
+      @allowed_origins.any? do |allowed_origin|
+        @origin.match allowed_origin
+      end
     end
   end
 end
