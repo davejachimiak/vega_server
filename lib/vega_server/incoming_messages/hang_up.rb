@@ -18,10 +18,6 @@ module VegaServer::IncomingMessages
       @websocket.close
     end
 
-    def self.handle(websocket)
-      new(websocket).handle
-    end
-
     private
 
     def room_peer_websockets

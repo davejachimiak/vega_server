@@ -14,10 +14,6 @@ module VegaServer::IncomingMessages
       VegaServer::OutgoingMessages.send_message(peer_websocket, message)
     end
 
-    def self.handle(websocket, payload)
-      new(websocket, payload).handle
-    end
-
     private
 
     def peer_websocket

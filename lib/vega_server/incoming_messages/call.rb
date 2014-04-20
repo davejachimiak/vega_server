@@ -17,10 +17,6 @@ module VegaServer::IncomingMessages
       add_client_to_room unless room_at_capacity?
     end
 
-    def self.handle(websocket, payload)
-      new(websocket, payload).handle
-    end
-
     private
 
     def message
