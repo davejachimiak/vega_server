@@ -8,19 +8,25 @@ module VegaServer
     end
 
     def self.to_struct(json)
-      hash = load(json)
+      hash          = load(json)
       purified_hash = purify_keys(hash)
+
       OpenStruct.new(purified_hash)
     end
 
     def self.load(json)
       MultiJson.load(json)
+    rescue MultiJson::ParseError
+      {}
     end
 
     def self.purify_keys(hash)
+      return {} unless hash.is_a?(Hash)
+
       Hash[hash.map do |k, v|
-        key = k.underscore.to_sym
+        key   = k.underscore.to_sym
         value = v.is_a?(Hash) ? purify_keys(v) : v
+
         [key, value]
       end]
     end
