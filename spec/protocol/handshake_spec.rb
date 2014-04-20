@@ -12,7 +12,7 @@ describe 'handshake' do
   end
 
   context 'allowed origins are configured' do
-    let(:allowed_origins) { ['http://www.example.org'] }
+    let(:allowed_origins) { [allowed_origin] }
     let(:allowed_origin) { /example.org/ }
 
     before do
@@ -24,7 +24,7 @@ describe 'handshake' do
     after { reset_allowed_origins }
 
     context 'origin of client is allowed' do
-      let(:origin) { allowed_origin }
+      let(:origin) { 'http://www.example.org' }
 
       it('leaves the connection open') do
         assert_socket_open(client)
