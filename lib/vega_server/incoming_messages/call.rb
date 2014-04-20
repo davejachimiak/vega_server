@@ -28,13 +28,7 @@ module VegaServer::IncomingMessages
     end
 
     def peer_ids
-      if room
-        client_ids = room.reject do |key|
-          key == @client_id
-        end
-      else
-        []
-      end
+      room.reject { |client_id| client_id == @client_id }
     end
 
     def room_at_capacity?

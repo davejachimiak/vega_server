@@ -15,7 +15,7 @@ module VegaServer
 
       def self.client_room(client_id)
         if room_id = client_room_id(client_id)
-          rooms[room_id]
+          room(room_id)
         else
           []
         end
@@ -33,7 +33,7 @@ module VegaServer
       end
 
       def self.room(room_id)
-        rooms[room_id]
+        rooms[room_id] || []
       end
 
       def self.client(client_id)
