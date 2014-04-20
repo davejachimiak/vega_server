@@ -5,7 +5,7 @@ module VegaServer::IncomingMessages
     def initialize(websocket, payload)
       @websocket = websocket
       @payload   = payload
-      @peer_id   = payload[:peer_id]
+      @peer_id   = @payload[:peer_id]
       @pool      = VegaServer.connection_pool
       @storage   = VegaServer.storage
     end
@@ -26,6 +26,14 @@ module VegaServer::IncomingMessages
     
     def message
       outgoing_message_class.new(client_id, read_relayable)
+    end
+
+    def outgoing_message_class
+      raise NotImplementedError
+    end
+
+    def read_relayable
+      raise NotImplementedError
     end
   end
 end
