@@ -75,27 +75,5 @@ describe 'call message is received' do
         assert_response(client, response)
       end
     end
-
-    context 'room is full' do
-      let(:response) do
-        MultiJson.dump({ type: 'roomFull', payload: {} })
-      end
-
-      before { set_max_capacity('/chat', 2) }
-      after { reset_capacities }
-
-      it_should_behave_like 'call message'
-
-      it 'should not add the client to the room' do
-        send_message(client, message)
-        refute_client_in_room(room_id, client_id)
-      end
-
-      it 'sends a roomFull response to the client' do
-        add_listener(client)
-        send_message(client, message)
-        assert_response(client, response)
-      end
-    end
   end
 end
