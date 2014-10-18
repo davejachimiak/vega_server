@@ -1,5 +1,0 @@
-source 'https://rubygems.org'
-
-gem 'vega_server', git: 'git@github.com:davejachimiak/vega_server.git'
-gem 'puma'
-gem 'rack'
